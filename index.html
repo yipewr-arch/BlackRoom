@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackroom IDE | Yi Galaxy Studios</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --panel-bg: #121212;
+            --accent-color: #3b82f6;
+            --text-color: #e0e0e0;
+            --border-color: #262626;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Шапка проекта */
+        header {
+            background-color: var(--panel-bg);
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            gap: 20px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .info-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .info-text a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .info-text a:hover { text-decoration: underline; }
+
+        /* Рабочая область */
+        .main-container {
+            display: flex;
+            flex: 1;
+            gap: 2px;
+            background-color: var(--border-color);
+        }
+
+        .editor-section, .preview-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color);
+        }
+
+        .label {
+            background-color: var(--panel-bg);
+            padding: 8px 15px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        textarea {
+            flex: 1;
+            background-color: #0a0a0a;
+            color: #d4d4d4;
+            border: none;
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 15px;
+            line-height: 1.5;
+            outline: none;
+            resize: none;
+        }
+
+        iframe {
+            flex: 1;
+            background-color: white;
+            border: none;
+        }
+
+        /* Стилизация полосы прокрутки */
+        textarea::-webkit-scrollbar { width: 8px; }
+        textarea::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="logo.png" alt="Blackroom Logo" class="logo" onerror="this.style.display='none'; this.parentElement.insertAdjacentHTML('afterbegin', '<div style=\'font-size:30px\'>⬛</div>')">
+    <div class="info-text">
+        <strong>Добро пожаловать в Blackroom.</strong><br>
+        Blackroom — это HTML-редактор, созданный компанией <strong>Yi Galaxy Studios</strong>.<br>
+        <a href="https://github.com/yipewr-arch/BlackRoom" target="_blank">Исходный код проекта</a>
+    </div>
+</header>
+
+<div class="main-container">
+    <div class="editor-section">
+        <div class="label">Editor</div>
+        <textarea id="html-code" spellcheck="false" placeholder="Пишите ваш HTML здесь..."></textarea>
+    </div>
+    
+    <div class="preview-section">
+        <div class="label">Live Preview</div>
+        <iframe id="preview-window"></iframe>
+    </div>
+</div>
+
+<script>
+    const textarea = document.getElementById('html-code');
+    const iframe = document.getElementById('preview-window');
+
+    // Тестовый красивый HTML при запуске
+    const defaultCode = `<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 90vh; 
+            margin: 0;
+            background: linear-gradient(135deg, #1a1a1a, #000);
+            color: white;
+        }
+        .card {
+            padding: 30px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: fadeIn 1.5s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } }
+        h1 { color: #3b82f6; margin-bottom: 10px; }
+        p { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Привет из Blackroom</h1>
+        <p>Это пример стильного отображения вашего кода.</p>
+        <small>Yi Galaxy Studios &copy; 2026</small>
+    </div>
+</body>
+</html>`;
+
+    function updatePreview() {
+        const content = textarea.value;
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        doc.open();
+        doc.write(content);
+        doc.close();
+    }
+
+    // Слушатель событий для мгновенного обновления
+    textarea.addEventListener('input', updatePreview);
+
+    // Установка начального кода
+    textarea.value = defaultCode;
+    updatePreview();
+</script>
+
+</body>
+</html>
