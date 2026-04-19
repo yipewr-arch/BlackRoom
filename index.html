@@ -9,6 +9,7 @@
             --bg-color: #050505;
             --panel-bg: #121212;
             --accent-color: #3b82f6;
+            --save-btn: #2ea043;
             --text-color: #e0e0e0;
             --border-color: #262626;
         }
@@ -18,7 +19,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -26,7 +27,7 @@
             overflow: hidden;
         }
 
-        /* Шапка проекта */
+        /* Шапка */
         header {
             background-color: var(--panel-bg);
             padding: 15px 25px;
@@ -36,44 +37,58 @@
             gap: 20px;
         }
 
-        .logo {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
+        .logo { width: 50px; height: 50px; object-fit: contain; border-radius: 8px; }
+
+        .info-text { font-size: 13px; line-height: 1.4; flex: 1; }
+        .info-text a { color: var(--accent-color); text-decoration: none; }
+
+        /* Переключатель языков */
+        .lang-switcher {
+            display: flex;
+            gap: 5px;
+            background: #1a1a1a;
+            padding: 4px;
             border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
 
-        .info-text {
-            font-size: 14px;
-            line-height: 1.4;
+        .lang-btn {
+            background: transparent;
+            color: #666;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            transition: 0.2s;
         }
 
-        .info-text a {
-            color: var(--accent-color);
-            text-decoration: none;
+        .lang-btn.active { background: #333; color: white; }
+        .lang-btn:hover:not(.active) { color: #aaa; }
+
+        /* Кнопка сохранения */
+        .save-btn {
+            background-color: var(--save-btn);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
         }
 
-        .info-text a:hover { text-decoration: underline; }
+        .save-btn:hover { background-color: #3fb950; }
 
         /* Рабочая область */
-        .main-container {
-            display: flex;
-            flex: 1;
-            gap: 2px;
-            background-color: var(--border-color);
-        }
-
-        .editor-section, .preview-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--bg-color);
-        }
+        .main-container { display: flex; flex: 1; gap: 2px; background-color: var(--border-color); }
+        .editor-section, .preview-section { flex: 1; display: flex; flex-direction: column; background-color: var(--bg-color); }
 
         .label {
             background-color: var(--panel-bg);
             padding: 8px 15px;
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #888;
@@ -81,48 +96,42 @@
         }
 
         textarea {
-            flex: 1;
-            background-color: #0a0a0a;
-            color: #d4d4d4;
-            border: none;
-            padding: 20px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 15px;
-            line-height: 1.5;
-            outline: none;
-            resize: none;
+            flex: 1; background-color: #0a0a0a; color: #d4d4d4; border: none;
+            padding: 20px; font-family: 'Consolas', monospace; font-size: 15px;
+            line-height: 1.5; outline: none; resize: none;
         }
 
-        iframe {
-            flex: 1;
-            background-color: white;
-            border: none;
-        }
-
-        /* Стилизация полосы прокрутки */
-        textarea::-webkit-scrollbar { width: 8px; }
-        textarea::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        iframe { flex: 1; background-color: white; border: none; }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="logo.png" alt="Blackroom Logo" class="logo" onerror="this.style.display='none'; this.parentElement.insertAdjacentHTML('afterbegin', '<div style=\'font-size:30px\'>⬛</div>')">
-    <div class="info-text">
-        <strong>Добро пожаловать в Blackroom.</strong><br>
-        Blackroom — это HTML-редактор, созданный компанией <strong>Yi Galaxy Studios</strong>.<br>
-        <a href="https://github.com/yipewr-arch/BlackRoom" target="_blank">Исходный код проекта</a>
+    <img src="logo.png" alt="Logo" class="logo" onerror="this.style.display='none'; this.parentElement.insertAdjacentHTML('afterbegin', '<div style=\'font-size:30px\'>⬛</div>')">
+    
+    <div class="info-text" id="header-info">
+        <span id="welcome-msg">Добро пожаловать в Blackroom.</span><br>
+        <span id="studio-msg">Создано компанией Yi Galaxy Studios.</span> 
+        <a href="https://github.com/yipewr-arch/BlackRoom" target="_blank">GitHub</a>
     </div>
+
+    <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLanguage('ru', this)">RU</button>
+        <button class="lang-btn" onclick="setLanguage('en', this)">EN</button>
+        <button class="lang-btn" onclick="setLanguage('de', this)">DE</button>
+    </div>
+
+    <button class="save-btn" id="save-btn-text" onclick="saveMyCode()">💾 Сохранить .html</button>
 </header>
 
 <div class="main-container">
     <div class="editor-section">
-        <div class="label">Editor</div>
-        <textarea id="html-code" spellcheck="false" placeholder="Пишите ваш HTML здесь..."></textarea>
+        <div class="label" id="label-editor">Editor</div>
+        <textarea id="html-code" spellcheck="false"></textarea>
     </div>
     
     <div class="preview-section">
-        <div class="label">Live Preview</div>
+        <div class="label" id="label-preview">Live Preview</div>
         <iframe id="preview-window"></iframe>
     </div>
 </div>
@@ -131,59 +140,74 @@
     const textarea = document.getElementById('html-code');
     const iframe = document.getElementById('preview-window');
 
-    // Тестовый красивый HTML при запуске
-    const defaultCode = `<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body { 
-            font-family: sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 90vh; 
-            margin: 0;
-            background: linear-gradient(135deg, #1a1a1a, #000);
-            color: white;
+    // База переводов
+    const translations = {
+        ru: {
+            welcome: "Добро пожаловать в Blackroom.",
+            studio: "Создано компанией Yi Galaxy Studios.",
+            save: "💾 Сохранить .html",
+            editor: "Редактор",
+            preview: "Предпросмотр",
+            placeholder: "<h1>Привет из Blackroom</h1><p>Код готов!</p>"
+        },
+        en: {
+            welcome: "Welcome to Blackroom.",
+            studio: "Created by Yi Galaxy Studios.",
+            save: "💾 Save .html",
+            editor: "Editor",
+            preview: "Live Preview",
+            placeholder: "<h1>Hello from Blackroom</h1><p>Code is ready!</p>"
+        },
+        de: {
+            welcome: "Willkommen bei Blackroom.",
+            studio: "Erstellt von Yi Galaxy Studios.",
+            save: "💾 .html Speichern",
+            editor: "Editor",
+            preview: "Live-Vorschau",
+            placeholder: "<h1>Hallo von Blackroom</h1><p>Code ist bereit!</p>"
         }
-        .card {
-            padding: 30px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: fadeIn 1.5s ease;
+    };
+
+    function setLanguage(lang, btn) {
+        // Меняем активную кнопку
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Обновляем текст в UI
+        document.getElementById('welcome-msg').innerText = translations[lang].welcome;
+        document.getElementById('studio-msg').innerText = translations[lang].studio;
+        document.getElementById('save-btn-text').innerText = translations[lang].save;
+        document.getElementById('label-editor').innerText = translations[lang].editor;
+        document.getElementById('label-preview').innerText = translations[lang].preview;
+
+        // Можно также обновить шаблон в редакторе, если он пустой
+        if(textarea.value.trim() === "" || textarea.value.includes("<h1>")) {
+             textarea.value = `<!DOCTYPE html>\n<html>\n<head>\n<style>\n  body { font-family: sans-serif; text-align: center; padding-top: 50px; background: #f4f4f4; }\n</style>\n</head>\n<body>\n  ${translations[lang].placeholder}\n</body>\n</html>`;
+             updatePreview();
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } }
-        h1 { color: #3b82f6; margin-bottom: 10px; }
-        p { opacity: 0.8; }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h1>Привет из Blackroom</h1>
-        <p>Это пример стильного отображения вашего кода.</p>
-        <small>Yi Galaxy Studios &copy; 2026</small>
-    </div>
-</body>
-</html>`;
+    }
 
     function updatePreview() {
-        const content = textarea.value;
         const doc = iframe.contentDocument || iframe.contentWindow.document;
         doc.open();
-        doc.write(content);
+        doc.write(textarea.value);
         doc.close();
     }
 
-    // Слушатель событий для мгновенного обновления
-    textarea.addEventListener('input', updatePreview);
+    function saveMyCode() {
+        const blob = new Blob([textarea.value], { type: "text/html" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "index.html";
+        link.click();
+        URL.revokeObjectURL(url);
+    }
 
-    // Установка начального кода
-    textarea.value = defaultCode;
-    updatePreview();
+    textarea.addEventListener('input', updatePreview);
+    
+    // Инициализация (RU по умолчанию)
+    setLanguage('ru', document.querySelector('.lang-btn'));
 </script>
 
 </body>
